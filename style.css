@@ -14,7 +14,7 @@ body {
   justify-content: center;
 }
 
-.gameBoard {
+.boxes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 5px;

@@ -12,19 +12,40 @@ const gameBoard = (() => {
   }
 
   //display squares for each array item
-  let gameBoard = document.querySelector(".gameBoard");
+  let boxes = document.querySelector(".boxes");
 
   board.forEach(() => {
     const box = document.createElement("div");
     box.className = "box";
-    gameBoard.appendChild(box);
+    boxes.appendChild(box);
   });
 
   //make event listeners on box to makeMarker
-  Array.from(gameBoard.children).forEach((box, index) => {});
+  Array.from(boxes.children).forEach((box, index) => {
+    box.addEventListener("click", () => {
+      //display active player marker
+      box.innerHTML = `${game.activePlayer.marker}`;
+      //update array value to marker
+      board[index] = game.activePlayer.marker;
+      //remove event listner from marked index
+      box.style.pointerEvents = "none";
+      //depreciate remainingSpots
+      game.remainingSpots -= 1;
+      //check winner
+      game.checkWinner();
+      //check remaining spots
+      if (game.gameWon == false) {
+        if (game.remainingSpots > 0) {
+          game.informNextPlayer();
+          game.nextPlayer();
+        } else if (game.remainingSpots == 0) {
+          game.gameTied();
+        }
+      }
+    });
+  });
   return {
     board,
-    box,
   };
 })();
 
@@ -34,8 +55,10 @@ const game = (() => {
   const playerOne = Player("Player 1", "X");
   const playerTwo = Player("Player 2", "O");
 
-  let activePlayer = playerOne; //will switch between both players
+  let activePlayer = playerOne; //will switch between both players with a nextPlayer() function
   let activeText = document.querySelector(".activeText"); //will inform which player's turn and declare the winner, when won
+  let remainingSpots = 9; //this will reduce every time a turn has been made, maybe through index? put depreciation of spots in gameboard
+  let gameWon = false; //will change when winning condition is made or when tie (remaining spots = 0).
 
   //winning conditions
   const winningBoxes = [
@@ -51,9 +74,46 @@ const game = (() => {
 
   //checkWinner
 
+  function checkWinner() {
+    winningBoxes.forEach((item, index) => {
+      if (
+        gameBoard.board[item[0]] === this.activePlayer.marker &&
+        gameBoard.board[item[1]] === this.activePlayer.marker &&
+        gameBoard.board[item[2]] === this.activePlayer.marker
+      ) {
+        activeText.innerHTML = `${this.activePlayer.name} wins`;
+        this.gameWon = true;
+      }
+    });
+  }
+
+  //change activeText to tell next player it's their turn, ternary operator
+  function informNextPlayer() {
+    this.activePlayer === playerOne
+      ? (activeText.innerHTML = "Player 2's Turn")
+      : (activeText.innerHTML = "Player 1's Turn");
+  }
+
+  //change activePlayer, ternary operator
+  function nextPlayer() {
+    this.activePlayer === playerOne
+      ? (this.activePlayer = playerTwo)
+      : (this.activePlayer = playerOne);
+  }
+
+  //declare tie in activeText
+
+  function gameTied() {
+    activeText.innerHTML = "Tie Game!";
+  }
+
   return {
-    playerOne,
-    playerTwo,
     activePlayer,
+    remainingSpots,
+    checkWinner,
+    informNextPlayer,
+    nextPlayer,
+    gameWon,
+    gameTied,
   };
 })();
