@@ -24,6 +24,7 @@ const gameBoard = (() => {
   Array.from(boxes.children).forEach((box, index) => {
     box.addEventListener("click", () => {
       //display active player marker
+      console.log(game.activePlayer.marker);
       box.innerHTML = `${game.activePlayer.marker}`;
       //update array value to marker
       board[index] = game.activePlayer.marker;
@@ -75,7 +76,7 @@ const game = (() => {
   //checkWinner
 
   function checkWinner() {
-    winningBoxes.forEach((item, index) => {
+    winningBoxes.forEach((item) => {
       if (
         gameBoard.board[item[0]] === this.activePlayer.marker &&
         gameBoard.board[item[1]] === this.activePlayer.marker &&
