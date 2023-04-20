@@ -5,6 +5,26 @@ const Player = (name, marker) => {
 
 // make gameboard object
 const gameBoard = (() => {
+  //form to get names
+  let playerOneName;
+  let playerTwoName;
+  let activeText = document.querySelector(".activeText");
+  document.getElementById("submitBtn").onclick = function () {
+    event.preventDefault();
+    playerOneName = document.getElementById("playerOne").value;
+    playerTwoName = document.getElementById("playerTwo").value;
+    activeText.innerHTML = `${playerOneName}'s turn`;
+    document.querySelector(".game-board").hidden = false;
+    document.querySelector("#name-inputs").hidden = true;
+  };
+
+  //change activeText to tell next player it's their turn, ternary operator
+  function informNextPlayer() {
+    this.activePlayer === game.playerOne
+      ? (activeText.innerHTML = `${game.activePlayer.name}'s turn`)
+      : (activeText.innerHTML = `${game.activePlayer.name}'s turn`);
+  }
+
   //gameboard array
   let board = [];
   for (i = 0; i < 9; i++) {
@@ -19,12 +39,13 @@ const gameBoard = (() => {
     box.className = "box";
     boxes.appendChild(box);
   });
-
   //make event listeners on box to makeMarker
   Array.from(boxes.children).forEach((box, index) => {
     box.addEventListener("click", () => {
+      //assign names
+      game.playerOne.name = playerOneName;
+      game.playerTwo.name = playerTwoName;
       //display active player marker
-      console.log(game.activePlayer.marker);
       box.innerHTML = `${game.activePlayer.marker}`;
       //update array value to marker
       board[index] = game.activePlayer.marker;
@@ -37,8 +58,8 @@ const gameBoard = (() => {
       //check remaining spots
       if (game.gameWon == false) {
         if (game.remainingSpots > 0) {
-          game.informNextPlayer();
           game.nextPlayer();
+          informNextPlayer();
         } else if (game.remainingSpots == 0) {
           game.gameTied();
         }
@@ -47,6 +68,9 @@ const gameBoard = (() => {
   });
   return {
     board,
+    playerOneName,
+    playerTwoName,
+    activeText,
   };
 })();
 
@@ -57,7 +81,6 @@ const game = (() => {
   const playerTwo = Player("Player 2", "O");
 
   let activePlayer = playerOne; //will switch between both players with a nextPlayer() function
-  let activeText = document.querySelector(".activeText"); //will inform which player's turn and declare the winner, when won
   let remainingSpots = 9; //this will reduce every time a turn has been made, maybe through index? put depreciation of spots in gameboard
   let gameWon = false; //will change when winning condition is made or when tie (remaining spots = 0).
 
@@ -82,17 +105,11 @@ const game = (() => {
         gameBoard.board[item[1]] === this.activePlayer.marker &&
         gameBoard.board[item[2]] === this.activePlayer.marker
       ) {
-        activeText.innerHTML = `${this.activePlayer.name} wins`;
+        console.log(this.activePlayer.name);
+        gameBoard.activeText.innerHTML = `${this.activePlayer.name} wins`;
         this.gameWon = true;
       }
     });
-  }
-
-  //change activeText to tell next player it's their turn, ternary operator
-  function informNextPlayer() {
-    this.activePlayer === playerOne
-      ? (activeText.innerHTML = "Player 2's Turn")
-      : (activeText.innerHTML = "Player 1's Turn");
   }
 
   //change activePlayer, ternary operator
@@ -105,14 +122,15 @@ const game = (() => {
   //declare tie in activeText
 
   function gameTied() {
-    activeText.innerHTML = "Tie Game!";
+    gameBoard.activeText.innerHTML = "Tie Game!";
   }
 
   return {
+    playerOne,
+    playerTwo,
     activePlayer,
     remainingSpots,
     checkWinner,
-    informNextPlayer,
     nextPlayer,
     gameWon,
     gameTied,
