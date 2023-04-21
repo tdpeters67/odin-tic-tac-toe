@@ -39,6 +39,20 @@ const gameBoard = (() => {
     box.className = "box";
     boxes.appendChild(box);
   });
+  document.querySelector(".restartBtn").onclick = function () {
+    Array.from(boxes.children).forEach((box, index) => {
+      box.innerHTML = "";
+      board[index] = "";
+      box.style.pointerEvents = "auto";
+      game.activePlayer = game.playerOne;
+      activeText.innerHTML = `${game.activePlayer.name}'s turn`;
+      game.remainingSpots = 9;
+    });
+  };
+  document.querySelector(".newGameBtn").onclick = function () {
+    location.reload();
+  };
+
   //make event listeners on box to makeMarker
   Array.from(boxes.children).forEach((box, index) => {
     box.addEventListener("click", () => {
