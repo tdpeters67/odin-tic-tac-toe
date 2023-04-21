@@ -47,6 +47,7 @@ const gameBoard = (() => {
       game.activePlayer = game.playerOne;
       activeText.innerHTML = `${game.activePlayer.name}'s turn`;
       game.remainingSpots = 9;
+      game.gameWon = false;
     });
   };
   document.querySelector(".newGameBtn").onclick = function () {
